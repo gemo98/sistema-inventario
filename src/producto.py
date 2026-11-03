@@ -2,7 +2,7 @@ class Producto:
     """Representa un libro a la venta en una librería."""
 
     def __init__(self, codigo, nombre, precio, existencia):
-        self.codigo = codigo          # Código del producto
+        self.codigo = codigo          # Código del libro
         self.nombre = nombre          # Nombre del producto (título del libro)
         self.precio = precio          # Precio en pesos mexicanos
         self.existencia = existencia  # Unidades en inventario
