@@ -2,7 +2,7 @@ import unicodedata
 from producto import libros
 
 
-def normalizar(texto):
+def normalizar(texto)
     """Convierte a minúsculas y quita acentos para comparar sin errores."""
     texto = unicodedata.normalize("NFD", texto.lower())
     return "".join(c for c in texto if unicodedata.category(c) != "Mn")
