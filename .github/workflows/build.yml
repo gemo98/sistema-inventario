@@ -1,0 +1,27 @@
+name: Verificación del sistema de inventario
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar el código del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verificar sintaxis de todos los archivos
+        run: python -m compileall src
+
+      - name: Verificar que los módulos se importan correctamente
+        working-directory: src
+        run: python -c "import producto, busqueda"
