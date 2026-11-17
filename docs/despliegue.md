@@ -214,7 +214,9 @@ Evidencia local del procedimiento:
 | Verificación funcional de v1.0.0 | `evidencias/04-verificacion-v1.0.0.txt` |
 | Verificación local de v1.1.0 | `evidencias/05-despliegue-manual-v1.1.0.txt` |
 | Simulación de fallo y rollback | `evidencias/06-rollback.txt` |
-| Ejecución del workflow | Pendiente de adjuntar el run de GitHub Actions |
+| Ejecución del workflow de despliegue v1.0.0 | `evidencias/07-workflow-v1.0.0.txt` |
+| Ejecución de la liberación v1.1.0 | `evidencias/08-release-v1.1.0.txt` |
+| Despliegue de v1.1.0 y rollback en Actions | Pendiente de ejecutar (ver `como-ejecutar-el-workflow.md`) |
 
 ## 13. Limitación declarada
 

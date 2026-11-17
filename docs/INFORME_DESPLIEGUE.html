@@ -174,9 +174,12 @@ parámetros:</p>
   <tr><td>2</td><td>v1.1.0</td><td>false</td><td class="ok">Despliegue con registro de productos</td></tr>
   <tr><td>3</td><td>v1.1.0</td><td>true</td><td class="ok">Fallo simulado y rollback a v1.0.0</td></tr>
 </table>
-<p class="pending">La evidencia del run de GitHub Actions se adjunta como captura
-o enlace después de ejecutar el workflow en Actions → Despliegue del Sistema de
-Inventario → Run workflow.</p>
+<p><strong>Evidencia de ejecución:</strong> el run automático de v1.0.0 terminó
+correctamente: <a href="https://github.com/gemo98/sistema-inventario/actions/runs/44194543783">actions/runs/44194543783</a>.
+La liberación de v1.1.0 también terminó correctamente:
+<a href="https://github.com/gemo98/sistema-inventario/actions/runs/44194583392">actions/runs/44194583392</a>.
+Los runs manuales de v1.1.0 y del rollback se ejecutan con los parámetros de la
+tabla anterior y se adjuntan como captura y artefacto.</p>
 
 <h2>7. Simulación de fallo y rollback</h2>
 <p>Se desplegó v1.1.0, se agregó una dependencia inexistente para simular un
@@ -207,7 +210,7 @@ RESULTADO: ROLLBACK OK - v1.0.0 restaurada y funcionando.</pre>
   <tr><td>2</td><td>Requisitos del entorno</td><td class="ok">Completo</td><td><code>docs/despliegue.md</code> §2</td></tr>
   <tr><td>3</td><td>Preparación de la máquina de destino</td><td class="ok">Completo</td><td><code>docs/despliegue.md</code> §3 y workflow</td></tr>
   <tr><td>4</td><td><code>deploy.yml</code> configurado</td><td class="ok">Completo</td><td><code>.github/workflows/deploy.yml</code></td></tr>
-  <tr><td>5</td><td>Evidencia del workflow en Actions</td><td class="pending">Pendiente de ejecutar</td><td>Run de GitHub Actions</td></tr>
+  <tr><td>5</td><td>Evidencia del workflow en Actions</td><td class="ok">Completo (v1.0.0 y release v1.1.0)</td><td><code>evidencias/07</code> y <code>08</code>; faltan runs de v1.1.0 y rollback</td></tr>
   <tr><td>6</td><td>Evidencia de transferencia al servidor</td><td class="ok">Completo (scp local)</td><td><code>docs/evidencias/03</code> y workflow</td></tr>
   <tr><td>7</td><td>Evidencia de ejecución en destino</td><td class="ok">Completo</td><td><code>docs/evidencias/04</code> y <code>05</code></td></tr>
   <tr><td>8</td><td>Resultados de las verificaciones</td><td class="ok">Completo</td><td><code>docs/resultados-verificacion.md</code></td></tr>

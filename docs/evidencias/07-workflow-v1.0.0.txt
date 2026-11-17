@@ -1,0 +1,36 @@
+EVIDENCIA 07 - EJECUCION DEL WORKFLOW DE DESPLIEGUE (v1.0.0)
+========================================================================
+Fecha de la evidencia: 2026-11-17 22:54:35 UTC
+Workflow: Despliegue del Sistema de Inventario
+Evento: push (cambio de .github/workflows/deploy.yml en main)
+Version desplegada: v1.0.0
+Resultado: success
+
+URL del run:
+https://github.com/gemo98/sistema-inventario/actions/runs/44194543783
+
+Pasos ejecutados:
+  1. Set up job -> success
+  2. Preparar servidor de destino (SSH local en el runner) -> success
+  3. Descargar version liberada desde GitHub Releases -> success
+  4. Transferir paquete al servidor con scp -> success
+  5. Preparar version en el servidor -> success
+  6. Simular fallo de la version desplegada -> skipped
+  7. Ejecutar y verificar el sistema en el destino -> success
+  8. Verificar que el fallo simulado fue detectado -> skipped
+  9. Descargar version estable v1.0.0 para rollback -> skipped
+ 10. Recuperar v1.0.0 y verificar el rollback -> skipped
+ 11. Publicar evidencias del despliegue -> success
+ 12. Complete job -> success
+
+Artefacto publicado:
+  evidencia-despliegue-v1.0.0 (2319 bytes)
+
+Descarga:
+  Actions -> Despliegue del Sistema de Inventario -> run 44194543783 ->
+  seccion Artifacts -> evidencia-despliegue-v1.0.0
+
+Interpretacion:
+  El workflow descargo el paquete publicado en GitHub Releases, lo transfirio
+  por scp al servidor SSH local del runner, lo extrajo, ejecuto el sistema y
+  verifico la salida. Todos los pasos obligatorios terminaron correctamente.

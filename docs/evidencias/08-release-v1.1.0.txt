@@ -1,0 +1,31 @@
+EVIDENCIA 08 - EJECUCION DEL WORKFLOW DE LIBERACION (v1.1.0)
+========================================================================
+Fecha de la evidencia: 2026-11-17 22:54:51 UTC
+Workflow: Liberacion del Sistema de Inventario
+Evento: push del tag v1.1.0
+Resultado: success
+
+URL del run:
+https://github.com/gemo98/sistema-inventario/actions/runs/44194583392
+
+Pasos ejecutados:
+  1. Set up job -> success
+  2. Descargar repositorio -> success
+  3. Preparar Python -> success
+  4. Ejecutar pruebas -> success
+  5. Crear paquete -> success
+  6. Publicar version -> success
+  7. Post Preparar Python -> success
+  8. Post Descargar repositorio -> success
+  9. Complete job -> success
+
+Release publicado:
+  Tag: v1.1.0
+  Fecha: 2026-11-17 22:55:01 UTC
+  URL: https://github.com/gemo98/sistema-inventario/releases/tag/v1.1.0
+  Archivo: sistema-inventario-v1.1.0.zip
+
+Interpretacion:
+  El tag v1.1.0 disparo la liberacion, las 14 pruebas pasaron, se genero el
+  paquete y se publico en GitHub Releases. Este es el artefacto que debe
+  desplegarse en el ejercicio de v1.1.0 y rollback.
