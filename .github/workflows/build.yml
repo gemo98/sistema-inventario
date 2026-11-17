@@ -1,26 +1,35 @@
-name: Verificación y pruebas del sistema de inventario
+name: Liberacion del Sistema de Inventario
 
 on:
   push:
-    branches: [main, "test/**", "feature/**"]
-  pull_request:
-    branches: [main]
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
 
 jobs:
-  verificar:
+  liberar:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Descargar el código del repositorio
+      - name: Descargar repositorio
         uses: actions/checkout@v4
 
-      - name: Configurar Python
+      - name: Preparar Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      - name: Verificar sintaxis de todos los archivos
-        run: python -m compileall src tests
-
-      - name: Ejecutar pruebas unitarias
+      - name: Ejecutar pruebas
         run: python -m unittest discover -s tests -v
+
+      - name: Crear paquete
+        run: |
+          zip -r sistema-inventario-${GITHUB_REF_NAME}.zip src/ -x "*/__pycache__/*"
+
+      - name: Publicar version
+        uses: softprops/action-gh-release@v2
+        with:
+          files: sistema-inventario-${{ github.ref_name }}.zip
+          generate_release_notes: true
