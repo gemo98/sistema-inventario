@@ -1,8 +1,8 @@
-name: Verificación del sistema de inventario
+name: Verificación y pruebas del sistema de inventario
 
 on:
   push:
-    branches: [main]
+    branches: [main, "test/**", "feature/**"]
   pull_request:
     branches: [main]
 
@@ -20,8 +20,7 @@ jobs:
           python-version: "3.12"
 
       - name: Verificar sintaxis de todos los archivos
-        run: python -m compileall src
+        run: python -m compileall src tests
 
-      - name: Verificar que los módulos se importan correctamente
-        working-directory: src
-        run: python -c "import producto, busqueda"
+      - name: Ejecutar pruebas unitarias
+        run: python -m unittest discover -s tests -v
