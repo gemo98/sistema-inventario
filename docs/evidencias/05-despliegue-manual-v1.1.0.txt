@@ -1,0 +1,59 @@
+EVIDENCIA 05 - VERIFICACION LOCAL DE v1.1.0 (PREVIA AL RELEASE)
+Fecha de la evidencia: 2026-11-17 22:45:27 UTC
+Nota: este paquete se genera localmente solo para validar el codigo.
+      El artefacto oficial v1.1.0 lo genera el workflow release.yml al publicar el tag.
+
+$ unzip -l sistema-inventario-v1.1.0-local.zip
+Archive:  sistema-inventario-v1.1.0-local.zip
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+     2592  2026-11-17 16:43   src/busqueda.py
+     2406  2026-11-17 16:43   src/producto.py
+---------                     -------
+     4998                     2 files
+
+$ unzip -o sistema-inventario-v1.1.0-local.zip -d despliegue-v1.1.0
+Archive:  sistema-inventario-v1.1.0-local.zip
+  inflating: despliegue-v1.1.0/src/busqueda.py  
+  inflating: despliegue-v1.1.0/src/producto.py  
+
+Flujo: registrar LIB-006, consultarlo y salir.
+$ printf '3\nLIB-006\nEl principito\n250\n7\n1\nLIB-006\n4\n' | python3 src/busqueda.py
+
+--- BÚSQUEDA DE LIBROS ---
+1. Buscar por código
+2. Buscar por nombre
+3. Registrar producto
+4. Salir
+Elige una opción: 
+--- REGISTRAR PRODUCTO ---
+Código: Nombre: Precio: Existencia: 
+Producto registrado correctamente:
+=============================================
+Código:      LIB-006
+Nombre:      El principito
+Precio:      $250.00 MXN
+Existencia:  7 unidades
+=============================================
+
+--- BÚSQUEDA DE LIBROS ---
+1. Buscar por código
+2. Buscar por nombre
+3. Registrar producto
+4. Salir
+Elige una opción: Código (ej. LIB-002): =============================================
+Código:      LIB-006
+Nombre:      El principito
+Precio:      $250.00 MXN
+Existencia:  7 unidades
+=============================================
+
+--- BÚSQUEDA DE LIBROS ---
+1. Buscar por código
+2. Buscar por nombre
+3. Registrar producto
+4. Salir
+Elige una opción: ¡Hasta luego!
+Codigo de salida: 0
+
+RESULTADO: OK - v1.1.0 registra y consulta productos correctamente.

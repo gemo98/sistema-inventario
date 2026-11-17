@@ -1,0 +1,90 @@
+EVIDENCIA 04 - VERIFICACION FUNCIONAL DE v1.0.0 EN EL DESTINO
+Fecha de la evidencia: 2026-11-17 22:45:22 UTC
+Directorio: /tmp/opencode/despliegue-inventario/despliegue-v1.0.0
+
+PRUEBA 1: consultar un producto por codigo (LIB-002)
+$ printf '1\nLIB-002\n3\n' | python3 src/busqueda.py
+
+--- BÚSQUEDA DE LIBROS ---
+1. Buscar por código
+2. Buscar por nombre
+3. Salir
+Elige una opción: Código (ej. LIB-002): =============================================
+Código:      LIB-002
+Nombre:      Pedro Páramo
+Precio:      $199.50 MXN
+Existencia:  8 unidades
+=============================================
+
+--- BÚSQUEDA DE LIBROS ---
+1. Buscar por código
+2. Buscar por nombre
+3. Salir
+Elige una opción: ¡Hasta luego!
+RESULTADO: OK - se mostraron correctamente los datos.
+
+PRUEBA 2: consultar por nombre (quijote)
+$ printf '2\nquijote\n3\n' | python3 src/busqueda.py
+
+--- BÚSQUEDA DE LIBROS ---
+1. Buscar por código
+2. Buscar por nombre
+3. Salir
+Elige una opción: Nombre o parte del nombre: 
+Se encontraron 1 resultado(s):
+=============================================
+Código:      LIB-003
+Nombre:      Don Quijote de la Mancha
+Precio:      $459.90 MXN
+Existencia:  5 unidades
+=============================================
+
+--- BÚSQUEDA DE LIBROS ---
+1. Buscar por código
+2. Buscar por nombre
+3. Salir
+Elige una opción: ¡Hasta luego!
+RESULTADO: OK - busqueda por nombre correcta.
+
+PRUEBA 3: listado completo del inventario
+$ python3 src/producto.py
+
+  INVENTARIO DE LA LIBRERÍA
+
+=============================================
+Código:      LIB-001
+Nombre:      Cien años de soledad
+Precio:      $389.00 MXN
+Existencia:  12 unidades
+=============================================
+=============================================
+Código:      LIB-002
+Nombre:      Pedro Páramo
+Precio:      $199.50 MXN
+Existencia:  8 unidades
+=============================================
+=============================================
+Código:      LIB-003
+Nombre:      Don Quijote de la Mancha
+Precio:      $459.90 MXN
+Existencia:  5 unidades
+=============================================
+=============================================
+Código:      LIB-004
+Nombre:      La casa de los espíritus
+Precio:      $329.00 MXN
+Existencia:  0 unidades
+=============================================
+=============================================
+Código:      LIB-005
+Nombre:      Rayuela
+Precio:      $299.00 MXN
+Existencia:  3 unidades
+=============================================
+
+RESUMEN:
+  - El programa inicia correctamente: SI
+  - Se pueden consultar productos registrados: SI
+  - Se muestran correctamente sus datos: SI
+  - Se presentan errores durante la ejecucion: NO
+  - Registro de productos nuevos: NO disponible en v1.0.0 (se incorpora en v1.1.0)

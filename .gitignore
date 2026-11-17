@@ -1,0 +1,4 @@
+__pycache__/
+*.py[cod]
+sistema-inventario-*.zip
+despliegue-inventario/

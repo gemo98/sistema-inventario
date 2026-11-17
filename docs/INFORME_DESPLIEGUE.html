@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Informe de despliegue - Sistema de Inventario</title>
+<style>
+  @page { size: A4; margin: 2cm 1.8cm; }
+  body { font-family: "DejaVu Sans", Arial, sans-serif; font-size: 10.5pt; color: #1f2933; line-height: 1.45; }
+  h1 { font-size: 22pt; color: #12355b; margin: 0 0 6px 0; }
+  h2 { font-size: 14pt; color: #12355b; border-bottom: 2px solid #2f6f9f; padding-bottom: 3px; margin-top: 22px; }
+  h3 { font-size: 11.5pt; color: #2f6f9f; margin-bottom: 4px; }
+  p { margin: 6px 0; text-align: justify; }
+  p.kv { text-align: left; line-height: 1.55; }
+  table { border-collapse: collapse; width: 100%; margin: 8px 0 12px 0; font-size: 9.5pt; }
+  table.kv td:first-child { white-space: nowrap; }
+  th, td { border: 1px solid #b8c4ce; padding: 5px 6px; text-align: left; vertical-align: top; }
+  th { background: #e8f0f6; color: #12355b; white-space: nowrap; }
+  pre { background: #f4f6f8; border-left: 4px solid #2f6f9f; padding: 8px 10px; font-family: "DejaVu Sans Mono", monospace; font-size: 8.5pt; white-space: pre-wrap; }
+  code { font-family: "DejaVu Sans Mono", monospace; font-size: 9pt; background: #f0f3f5; padding: 1px 3px; }
+  .cover { text-align: center; padding-top: 120px; }
+  .cover .subtitle { font-size: 13pt; color: #52606d; margin-top: 8px; }
+  .cover .meta { margin-top: 60px; font-size: 11pt; }
+  .badge { display: inline-block; background: #2f6f9f; color: #fff; padding: 3px 10px; border-radius: 10px; font-size: 9pt; }
+  .ok { color: #1b6b3a; font-weight: bold; }
+  .pending { color: #9a6700; font-weight: bold; }
+  .page-break { page-break-before: always; }
+  .small { font-size: 9pt; color: #52606d; }
+  ul { margin: 4px 0 8px 20px; }
+  li { margin: 3px 0; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <p class="small">Fase DevOps: DEPLOY</p>
+  <h1>Despliegue del Sistema de Inventario</h1>
+  <p class="subtitle">Práctica 7 — Informe de despliegue y evidencias</p>
+  <p class="meta"><strong>Repositorio:</strong> github.com/gemo98/sistema-inventario<br>
+  <strong>Versión desplegada:</strong> v1.0.0 &nbsp;|&nbsp; <strong>Versión de rollback:</strong> v1.1.0<br>
+  <strong>Fecha:</strong> 17 de noviembre de 2026</p>
+  <p class="meta"><span class="badge">GitHub Actions</span></p>
+</div>
+
+<div class="page-break"></div>
+
+<h2>Resumen</h2>
+<p>Se desplegó la versión <strong>v1.0.0</strong> publicada en GitHub Releases, se
+verificó su funcionamiento y se documentó el procedimiento completo. Después se
+preparó la versión <strong>v1.1.0</strong>, que agrega el registro de productos,
+y se ejecutó un ejercicio de fallo simulado con recuperación a v1.0.0. La
+automatización se implementó en <code>.github/workflows/deploy.yml</code>,
+usando el runner de GitHub Actions como entorno de destino con un servicio SSH
+local para evidenciar la transferencia y la ejecución remota.</p>
+
+<h3>Alcance declarado</h3>
+<p>El entorno de destino es el runner <code>ubuntu-latest</code> de GitHub
+Actions. El workflow levanta un servidor SSH local (<code>127.0.0.1</code>) y
+transfiere el paquete con <code>scp</code> para producir evidencia real de
+transferencia y ejecución. No se utilizó una máquina virtual externa; el mismo
+workflow puede apuntar a un servidor real cambiando los secretos
+<code>DEPLOY_HOST</code>, <code>DEPLOY_USER</code>, <code>DEPLOY_KEY</code> y
+<code>DEPLOY_PORT</code>.</p>
+
+<h2>1. Versión identificada</h2>
+<p class="kv"><strong>Repositorio:</strong> https://github.com/gemo98/sistema-inventario<br>
+<strong>Versión:</strong> v1.0.0<br>
+<strong>Fecha de publicación:</strong> 2026-11-17 21:28:03 UTC<br>
+<strong>Archivo:</strong> sistema-inventario-v1.0.0.zip<br>
+<strong>Tamaño:</strong> 1 784 bytes<br>
+<strong>SHA-256:</strong> 573a4455613d077e9e54c43b31b9dc94e73077009e73a98bf3a1ae90d6ff633d<br>
+<strong>URL:</strong> https://github.com/gemo98/sistema-inventario/releases/tag/v1.0.0<br>
+<strong>Ubicación de despliegue:</strong> ~/sistema-inventario/version-v1.0.0</p>
+<p class="small">Evidencia: <code>docs/evidencias/01-version-descargada.txt</code>.</p>
+
+<h2>2. Requisitos del entorno</h2>
+<table>
+  <tr><th>Requisito</th><th>Comprobación</th><th>Resultado</th></tr>
+  <tr><td>Linux</td><td><code>uname -a</code></td><td class="ok">Cumple</td></tr>
+  <tr><td>Python 3.12+</td><td><code>python3 --version</code> → 3.13.16</td><td class="ok">Cumple</td></tr>
+  <tr><td>unzip</td><td><code>unzip -v</code> → 6.00</td><td class="ok">Cumple</td></tr>
+  <tr><td>OpenSSH</td><td><code>ssh -V</code> → 10.6p2</td><td class="ok">Cumple</td></tr>
+  <tr><td>Acceso a GitHub Releases</td><td>Descarga del artefacto</td><td class="ok">Cumple</td></tr>
+</table>
+<p class="small">Evidencia: <code>docs/evidencias/02-requisitos-entorno.txt</code>.</p>
+
+<h2>3. Preparación del entorno de destino</h2>
+<p>Para el despliegue manual se creó la carpeta <code>despliegue-inventario</code>,
+se descargó el ZIP y se extrajo en <code>despliegue-v1.0.0</code>. Para la
+automatización, el workflow prepara un servidor SSH local en el runner,
+autoriza la llave pública, crea <code>~/sistema-inventario</code> y comprueba la
+conexión con <code>SSH_OK</code>.</p>
+
+<h2>4. Despliegue manual</h2>
+<pre>$ unzip -o sistema-inventario-v1.0.0.zip -d despliegue-v1.0.0
+$ cd despliegue-v1.0.0
+$ find . -type f
+./src/busqueda.py
+./src/producto.py
+$ python3 -m compileall src
+Listing 'src'...
+Compiling 'src/busqueda.py'...
+Compiling 'src/producto.py'...</pre>
+<p>El paquete contiene únicamente <code>src/producto.py</code> y
+<code>src/busqueda.py</code>. El punto de entrada es <code>src/busqueda.py</code>.</p>
+
+<h2>5. Verificación del funcionamiento</h2>
+<h3>v1.0.0</h3>
+<pre>$ printf '1\nLIB-002\n3\n' | python3 src/busqueda.py
+
+--- BÚSQUEDA DE LIBROS ---
+1. Buscar por código
+2. Buscar por nombre
+3. Salir
+Elige una opción: Código (ej. LIB-002):
+=============================================
+Código:      LIB-002
+Nombre:      Pedro Páramo
+Precio:      $199.50 MXN
+Existencia:  8 unidades
+=============================================
+Elige una opción: ¡Hasta luego!</pre>
+<p>También se verificó la búsqueda por nombre (<code>quijote</code>) y el
+listado completo del inventario. El programa inicia, consulta y muestra los
+datos correctamente, sin errores. La v1.0.0 no incluye registro interactivo de
+productos.</p>
+
+<h3>v1.1.0</h3>
+<pre>$ printf '3\nLIB-006\nEl principito\n250\n7\n1\nLIB-006\n4\n' | python3 src/busqueda.py
+
+--- REGISTRAR PRODUCTO ---
+Código: LIB-006
+Nombre: El principito
+Precio: 250
+Existencia: 7
+Producto registrado correctamente:
+Código:      LIB-006
+Nombre:      El principito
+Precio:      $250.00 MXN
+Existencia:  7 unidades</pre>
+<p>La v1.1.0 registra el producto y permite consultarlo por código en la misma
+sesión. Las 14 pruebas unitarias pasan correctamente.</p>
+<p class="small">Evidencias: <code>03-despliegue-manual-v1.0.0.txt</code>,
+<code>04-verificacion-v1.0.0.txt</code> y
+<code>05-despliegue-manual-v1.1.0.txt</code>.</p>
+
+<div class="page-break"></div>
+
+<h2>6. Automatización con GitHub Actions</h2>
+<p>El archivo <code>.github/workflows/deploy.yml</code> se ejecuta manualmente
+(<code>workflow_dispatch</code>) y también al modificar el propio workflow en
+<code>main</code>, en cuyo caso despliega v1.0.0 automáticamente. Recibe dos
+parámetros:</p>
+<table>
+  <tr><th>Parámetro</th><th>Descripción</th><th>Valor por defecto</th></tr>
+  <tr><td><code>version</code></td><td>Versión liberada a desplegar</td><td>v1.0.0</td></tr>
+  <tr><td><code>simulate_failure</code></td><td>Simula un fallo y ejecuta el rollback</td><td>false</td></tr>
+</table>
+<h3>Pasos del workflow</h3>
+<ol>
+  <li>Preparar el servidor de destino con SSH local e instalar Python, OpenSSH y unzip.</li>
+  <li>Descargar el ZIP de GitHub Releases con <code>gh release download</code>.</li>
+  <li>Transferir el ZIP con <code>scp</code>.</li>
+  <li>Extraerlo en <code>~/sistema-inventario/version-&lt;versión&gt;</code> con <code>ssh</code>.</li>
+  <li>Ejecutar el sistema por SSH y verificar la salida esperada.</li>
+  <li>Si se simula el fallo, comprobar que el error aparezca en la salida.</li>
+  <li>Si se simula el fallo, provocar el error, recuperar v1.0.0 y verificar.</li>
+  <li>Publicar las salidas y los ZIP como artefacto de evidencia.</li>
+</ol>
+
+<h3>Secuencia de ejecución</h3>
+<table>
+  <tr><th>Ejecución</th><th>version</th><th>simulate_failure</th><th>Resultado esperado</th></tr>
+  <tr><td>1</td><td>v1.0.0</td><td>false</td><td class="ok">Despliegue y verificación correctos</td></tr>
+  <tr><td>2</td><td>v1.1.0</td><td>false</td><td class="ok">Despliegue con registro de productos</td></tr>
+  <tr><td>3</td><td>v1.1.0</td><td>true</td><td class="ok">Fallo simulado y rollback a v1.0.0</td></tr>
+</table>
+<p class="pending">La evidencia del run de GitHub Actions se adjunta como captura
+o enlace después de ejecutar el workflow en Actions → Despliegue del Sistema de
+Inventario → Run workflow.</p>
+
+<h2>7. Simulación de fallo y rollback</h2>
+<p>Se desplegó v1.1.0, se agregó una dependencia inexistente para simular un
+problema y se comprobó el fallo:</p>
+<pre>import modulo_inexistente
+import unicodedata
+
+Traceback (most recent call last):
+  File ".../src/busqueda.py", line 1, in &lt;module&gt;
+    import modulo_inexistente
+ModuleNotFoundError: No module named 'modulo_inexistente'
+Código de salida: 1</pre>
+<p>Después se recuperó v1.0.0 desde el paquete conservado y se verificó:</p>
+<pre>$ unzip -o sistema-inventario-v1.0.0.zip -d version-rollback
+$ cd version-rollback
+$ printf '1\nLIB-002\n3\n' | python3 src/busqueda.py
+Código:      LIB-002
+Nombre:      Pedro Páramo
+Precio:      $199.50 MXN
+Existencia:  8 unidades
+RESULTADO: ROLLBACK OK - v1.0.0 restaurada y funcionando.</pre>
+<p class="small">Evidencia: <code>docs/evidencias/06-rollback.txt</code>.</p>
+
+<h2>8. Entregables</h2>
+<table>
+  <tr><th>#</th><th>Entregable</th><th>Estado</th><th>Ubicación</th></tr>
+  <tr><td>1</td><td>Evidencia de la versión descargada</td><td class="ok">Completo</td><td><code>docs/evidencias/01-version-descargada.txt</code></td></tr>
+  <tr><td>2</td><td>Requisitos del entorno</td><td class="ok">Completo</td><td><code>docs/despliegue.md</code> §2</td></tr>
+  <tr><td>3</td><td>Preparación de la máquina de destino</td><td class="ok">Completo</td><td><code>docs/despliegue.md</code> §3 y workflow</td></tr>
+  <tr><td>4</td><td><code>deploy.yml</code> configurado</td><td class="ok">Completo</td><td><code>.github/workflows/deploy.yml</code></td></tr>
+  <tr><td>5</td><td>Evidencia del workflow en Actions</td><td class="pending">Pendiente de ejecutar</td><td>Run de GitHub Actions</td></tr>
+  <tr><td>6</td><td>Evidencia de transferencia al servidor</td><td class="ok">Completo (scp local)</td><td><code>docs/evidencias/03</code> y workflow</td></tr>
+  <tr><td>7</td><td>Evidencia de ejecución en destino</td><td class="ok">Completo</td><td><code>docs/evidencias/04</code> y <code>05</code></td></tr>
+  <tr><td>8</td><td>Resultados de las verificaciones</td><td class="ok">Completo</td><td><code>docs/resultados-verificacion.md</code></td></tr>
+  <tr><td>9</td><td>Evidencia de recuperación</td><td class="ok">Completo</td><td><code>docs/evidencias/06-rollback.txt</code></td></tr>
+  <tr><td>10</td><td>Procedimiento completo</td><td class="ok">Completo</td><td><code>docs/despliegue.md</code> y <code>docs/rollback.md</code></td></tr>
+</table>
+
+<h2>9. Preguntas de reflexión</h2>
+<p><strong>1. ¿Diferencia entre liberar y desplegar?</strong> Liberar produce y
+publica el artefacto versionado; desplegar lo instala, configura y verifica en
+el entorno de destino.</p>
+<p><strong>2. ¿Por qué usar el paquete de RELEASE?</strong> Porque es el
+artefacto oficial y probado; garantiza que se despliega exactamente lo liberado
+y permite repetir el proceso.</p>
+<p><strong>3. ¿Función del entorno de destino?</strong> Es donde el sistema se
+instala y ejecuta para los usuarios; debe cumplir los requisitos y es donde se
+verifica su funcionamiento.</p>
+<p><strong>4. ¿Qué información se necesita para SSH?</strong> Host, usuario,
+llave privada, puerto y llave pública autorizada en el servidor.</p>
+<p><strong>5. ¿Por qué usar secretos de GitHub?</strong> Para no exponer llaves
+ni contraseñas en el repositorio o en los logs; se almacenan cifrados y se
+inyectan en tiempo de ejecución.</p>
+<p><strong>6. ¿Ventajas de automatizar?</strong> Menos errores manuales,
+procedimiento reproducible, ahorro de tiempo, evidencia de cada ejecución y
+rollback consistente.</p>
+<p><strong>7. ¿Qué pasa si el destino no cumple los requisitos?</strong> El
+sistema puede no iniciar, fallar al importar módulos, no extraer el paquete o no
+conectarse por SSH; por eso se comprueban antes de desplegar.</p>
+<p><strong>8. ¿Por qué un procedimiento de recuperación?</strong> Para volver
+rápidamente a la última versión estable, reducir el tiempo de inactividad y
+dejar constancia del incidente.</p>
+
+<h2>10. Conclusión</h2>
+<p>El despliegue manual de v1.0.0 y v1.1.0 funciona correctamente. La
+automatización con GitHub Actions descarga el artefacto publicado, lo transfiere
+por SSH, lo extrae, lo ejecuta y verifica, y conserva evidencias. El ejercicio
+de fallo simulado permitió comprobar que el rollback a v1.0.0 restaura el
+servicio. El procedimiento queda documentado para que otra persona pueda
+repetirlo sin depender de los desarrolladores.</p>
+
+</body>
+</html>

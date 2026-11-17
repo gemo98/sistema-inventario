@@ -1,5 +1,5 @@
 import unicodedata
-from producto import libros
+from producto import libros, registrar_producto
 
 
 def normalizar(texto):
@@ -27,7 +27,8 @@ def main():
         print("\n--- BÚSQUEDA DE LIBROS ---")
         print("1. Buscar por código")
         print("2. Buscar por nombre")
-        print("3. Salir")
+        print("3. Registrar producto")
+        print("4. Salir")
         opcion = input("Elige una opción: ").strip()
 
         if opcion == "1":
@@ -49,6 +50,22 @@ def main():
                 print("No se encontró ningún libro con ese nombre.")
 
         elif opcion == "3":
+            print("\n--- REGISTRAR PRODUCTO ---")
+            codigo = input("Código: ")
+            nombre = input("Nombre: ")
+            precio = input("Precio: ")
+            existencia = input("Existencia: ")
+            try:
+                producto = registrar_producto(
+                    libros, codigo, nombre, precio, existencia
+                )
+            except ValueError as error:
+                print(f"No se pudo registrar: {error}")
+            else:
+                print("\nProducto registrado correctamente:")
+                producto.mostrar_informacion()
+
+        elif opcion == "4":
             print("¡Hasta luego!")
             break
 

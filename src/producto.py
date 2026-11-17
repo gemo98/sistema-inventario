@@ -17,6 +17,41 @@ class Producto:
         print("=" * 45)
 
 
+def registrar_producto(inventario, codigo, nombre, precio, existencia):
+    """Crea un producto, lo agrega al inventario y lo devuelve.
+
+    Lanza ValueError cuando los datos no son válidos o el código ya existe.
+    """
+    codigo = "" if codigo is None else str(codigo).strip()
+    nombre = "" if nombre is None else str(nombre).strip()
+
+    if not codigo:
+        raise ValueError("El código no puede estar vacío.")
+    if not nombre:
+        raise ValueError("El nombre no puede estar vacío.")
+
+    for producto in inventario:
+        if producto.codigo.upper() == codigo.upper():
+            raise ValueError(f"Ya existe un producto con el código {codigo}.")
+
+    try:
+        precio = float(precio)
+        existencia = int(existencia)
+    except (TypeError, ValueError):
+        raise ValueError(
+            "El precio debe ser numérico y la existencia un número entero."
+        )
+
+    if precio < 0:
+        raise ValueError("El precio no puede ser negativo.")
+    if existencia < 0:
+        raise ValueError("La existencia no puede ser negativa.")
+
+    producto = Producto(codigo, nombre, precio, existencia)
+    inventario.append(producto)
+    return producto
+
+
 libros = [
     Producto("LIB-001", "Cien años de soledad", 389.00, 12),
     Producto("LIB-002", "Pedro Páramo", 199.50, 8),

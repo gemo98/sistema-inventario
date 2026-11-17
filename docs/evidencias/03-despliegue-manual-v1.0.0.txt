@@ -1,0 +1,38 @@
+EVIDENCIA 03 - DESPLIEGUE MANUAL DE v1.0.0
+Fecha de la evidencia: 2026-11-17 22:45:19 UTC
+Ubicacion del despliegue: /tmp/opencode/despliegue-inventario
+
+$ unzip -o sistema-inventario-v1.0.0.zip -d despliegue-v1.0.0
+Archive:  sistema-inventario-v1.0.0.zip
+   creating: despliegue-v1.0.0/src/
+  inflating: despliegue-v1.0.0/src/producto.py  
+  inflating: despliegue-v1.0.0/src/busqueda.py  
+
+$ cd despliegue-v1.0.0 && find . -type f
+./src/busqueda.py
+./src/producto.py
+
+$ python3 -m compileall src
+Listing 'src'...
+Compiling 'src/busqueda.py'...
+Compiling 'src/producto.py'...
+
+$ printf '1\nLIB-002\n3\n' | python3 src/busqueda.py
+
+--- BÚSQUEDA DE LIBROS ---
+1. Buscar por código
+2. Buscar por nombre
+3. Salir
+Elige una opción: Código (ej. LIB-002): =============================================
+Código:      LIB-002
+Nombre:      Pedro Páramo
+Precio:      $199.50 MXN
+Existencia:  8 unidades
+=============================================
+
+--- BÚSQUEDA DE LIBROS ---
+1. Buscar por código
+2. Buscar por nombre
+3. Salir
+Elige una opción: ¡Hasta luego!
+Codigo de salida: 0

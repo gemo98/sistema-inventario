@@ -1,0 +1,26 @@
+EVIDENCIA 02 - REQUISITOS Y COMPROBACION DEL ENTORNO DE DESTINO
+Fecha de la evidencia: 2026-11-17 22:45:17 UTC
+
+$ uname -a
+Linux localhost.localdomain 7.3.3-1-default #1 SMP PREEMPT_DYNAMIC Sat Nov  7 15:51:56 UTC 2026 (69165fa) x86_64 x86_64 x86_64 GNU/Linux
+
+$ python3 --version
+Python 3.13.16
+
+$ unzip -v | head -n 1
+UnZip 6.00 of 20 April 2009, by Info-ZIP.  Maintained by C. Spieler.  Send
+
+$ ssh -V
+OpenSSH_10.6p2, OpenSSL 3.5.3 16 Sep 2025
+
+$ git --version
+git version 2.56.0
+
+Requisitos minimos del sistema:
+  - Linux (probado en Ubuntu; GitHub Actions usa ubuntu-latest)
+  - Python 3.12 o superior
+  - unzip
+  - OpenSSH (cliente y servidor) para el despliegue automatizado
+  - Acceso a GitHub Releases
+
+Resultado: el entorno local cumple todos los requisitos.

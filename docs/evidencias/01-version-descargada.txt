@@ -1,0 +1,31 @@
+EVIDENCIA 01 - VERSION DESCARGADA DESDE GITHUB RELEASES
+Fecha de la evidencia: 2026-11-17 22:44:54 UTC
+Repositorio: https://github.com/gemo98/sistema-inventario
+Release consultada: v1.0.0
+URL del release: https://github.com/gemo98/sistema-inventario/releases/tag/v1.0.0
+
+Metadatos del release (GitHub API):
+  tag_name: v1.0.0
+  name: v1.0.0
+  published_at: 2026-11-17T21:28:03Z
+  html_url: https://github.com/gemo98/sistema-inventario/releases/tag/v1.0.0
+  asset: sistema-inventario-v1.0.0.zip | bytes: 1784 | url: https://github.com/gemo98/sistema-inventario/releases/download/v1.0.0/sistema-inventario-v1.0.0.zip
+
+Comando de descarga:
+  curl -L -o sistema-inventario-v1.0.0.zip https://github.com/gemo98/sistema-inventario/releases/download/v1.0.0/sistema-inventario-v1.0.0.zip
+
+Archivo descargado:
+-rw-r--r--. 1 styveen styveen 1,8K nov 17 16:45 sistema-inventario-v1.0.0.zip
+
+SHA-256:
+573a4455613d077e9e54c43b31b9dc94e73077009e73a98bf3a1ae90d6ff633d  sistema-inventario-v1.0.0.zip
+
+Contenido del paquete:
+Archive:  sistema-inventario-v1.0.0.zip
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+        0  2026-11-17 15:27   src/
+     1224  2026-11-17 15:27   src/producto.py
+     1921  2026-11-17 15:27   src/busqueda.py
+---------                     -------
+     3145                     3 files

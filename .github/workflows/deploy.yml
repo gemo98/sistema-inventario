@@ -1,0 +1,180 @@
+name: Despliegue del Sistema de Inventario
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Versión liberada que se desplegará (ej. v1.0.0 o v1.1.0)"
+        required: true
+        default: "v1.0.0"
+        type: string
+      simulate_failure:
+        description: "Simular un fallo en la versión desplegada y recuperar v1.0.0"
+        required: true
+        default: false
+        type: boolean
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/deploy.yml"
+
+permissions:
+  contents: read
+
+env:
+  VERSION: ${{ github.event.inputs.version || 'v1.0.0' }}
+  SERVER_USER: runner
+  SERVER_HOST: 127.0.0.1
+
+jobs:
+  deploy:
+    name: Desplegar ${{ github.event.inputs.version || 'v1.0.0' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Preparar servidor de destino (SSH local en el runner)
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq openssh-server unzip
+          sudo ssh-keygen -A
+          sudo systemctl start ssh 2>/dev/null || sudo service ssh start
+          sleep 2
+
+          mkdir -p "$HOME/.ssh"
+          chmod 700 "$HOME/.ssh"
+          rm -f "$HOME/.ssh/id_ed25519" "$HOME/.ssh/id_ed25519.pub"
+          ssh-keygen -t ed25519 -N "" -f "$HOME/.ssh/id_ed25519" >/dev/null
+          cat "$HOME/.ssh/id_ed25519.pub" >> "$HOME/.ssh/authorized_keys"
+          chmod 600 "$HOME/.ssh/authorized_keys"
+          ssh-keyscan -H "$SERVER_HOST" >> "$HOME/.ssh/known_hosts" 2>/dev/null
+
+          mkdir -p "$HOME/sistema-inventario"
+          ssh -o BatchMode=yes -i "$HOME/.ssh/id_ed25519" "$SERVER_USER@$SERVER_HOST" \
+            "echo 'SSH_OK' && python3 --version"
+
+      - name: Descargar versión liberada desde GitHub Releases
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          gh release download "$VERSION" \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern "sistema-inventario-$VERSION.zip" \
+            --dir . \
+            --clobber
+          ls -lh "sistema-inventario-$VERSION.zip"
+
+      - name: Transferir paquete al servidor con scp
+        run: |
+          set -euo pipefail
+          scp -o BatchMode=yes -i "$HOME/.ssh/id_ed25519" \
+            "sistema-inventario-$VERSION.zip" \
+            "$SERVER_USER@$SERVER_HOST:~/sistema-inventario/"
+
+      - name: Preparar versión en el servidor
+        run: |
+          set -euo pipefail
+          ssh -o BatchMode=yes -i "$HOME/.ssh/id_ed25519" "$SERVER_USER@$SERVER_HOST" "
+            set -e
+            cd ~/sistema-inventario
+            rm -rf version-$VERSION
+            mkdir -p version-$VERSION
+            unzip -o sistema-inventario-$VERSION.zip -d version-$VERSION
+            ls -R version-$VERSION
+          " | tee listado-destino.txt
+
+      - name: Simular fallo de la versión desplegada
+        if: ${{ github.event.inputs.simulate_failure == 'true' }}
+        run: |
+          set -euo pipefail
+          ssh -o BatchMode=yes -i "$HOME/.ssh/id_ed25519" "$SERVER_USER@$SERVER_HOST" "
+            cd ~/sistema-inventario/version-$VERSION
+            sed -i '1i import modulo_inexistente' src/busqueda.py
+            echo 'Fallo simulado: se agregó una dependencia inexistente.'
+          "
+
+      - name: Ejecutar y verificar el sistema en el destino
+        continue-on-error: ${{ github.event.inputs.simulate_failure == 'true' }}
+        run: |
+          set -euo pipefail
+          if [ "$VERSION" = "v1.0.0" ]; then
+            ENTRADA=$'1\nLIB-002\n3\n'
+            ESPERADO="LIB-002"
+          else
+            ENTRADA=$'3\nLIB-006\nEl principito\n250\n7\n1\nLIB-006\n4\n'
+            ESPERADO="El principito"
+          fi
+
+          echo "$ENTRADA" | ssh -o BatchMode=yes -i "$HOME/.ssh/id_ed25519" \
+            "$SERVER_USER@$SERVER_HOST" \
+            "cd ~/sistema-inventario/version-$VERSION && python3 src/busqueda.py" \
+            | tee salida-ejecucion.txt
+
+          if ! grep -q "$ESPERADO" salida-ejecucion.txt; then
+            echo "ERROR: no se encontró '$ESPERADO' en la salida."
+            exit 1
+          fi
+          echo "VERIFICACION_OK"
+
+      - name: Verificar que el fallo simulado fue detectado
+        if: ${{ github.event.inputs.simulate_failure == 'true' }}
+        run: |
+          set -euo pipefail
+          if ! grep -q "ModuleNotFoundError" salida-ejecucion.txt; then
+            echo "ERROR: no se detectó el fallo simulado."
+            exit 1
+          fi
+          echo "FALLO_SIMULADO_OK"
+
+      - name: Descargar versión estable v1.0.0 para rollback
+        if: ${{ github.event.inputs.simulate_failure == 'true' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          gh release download v1.0.0 \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern "sistema-inventario-v1.0.0.zip" \
+            --dir . \
+            --clobber
+
+      - name: Recuperar v1.0.0 y verificar el rollback
+        if: ${{ github.event.inputs.simulate_failure == 'true' }}
+        run: |
+          set -euo pipefail
+          scp -o BatchMode=yes -i "$HOME/.ssh/id_ed25519" \
+            "sistema-inventario-v1.0.0.zip" \
+            "$SERVER_USER@$SERVER_HOST:~/sistema-inventario/"
+
+          ssh -o BatchMode=yes -i "$HOME/.ssh/id_ed25519" "$SERVER_USER@$SERVER_HOST" "
+            set -e
+            cd ~/sistema-inventario
+            rm -rf version-rollback
+            mkdir -p version-rollback
+            unzip -o sistema-inventario-v1.0.0.zip -d version-rollback
+            ls -R version-rollback
+          " | tee listado-rollback.txt
+
+          printf '1\nLIB-002\n3\n' | ssh -o BatchMode=yes -i "$HOME/.ssh/id_ed25519" \
+            "$SERVER_USER@$SERVER_HOST" \
+            "cd ~/sistema-inventario/version-rollback && python3 src/busqueda.py" \
+            | tee salida-rollback.txt
+
+          grep -q "LIB-002" salida-rollback.txt
+          echo "ROLLBACK_OK: v1.0.0 restaurada y funcionando."
+
+      - name: Publicar evidencias del despliegue
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: evidencia-despliegue-${{ github.event.inputs.version || 'v1.0.0' }}
+          path: |
+            salida-ejecucion.txt
+            salida-rollback.txt
+            listado-destino.txt
+            listado-rollback.txt
+            sistema-inventario-*.zip
+          if-no-files-found: warn
+          retention-days: 30

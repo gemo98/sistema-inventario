@@ -1,0 +1,46 @@
+EVIDENCIA 06 - SIMULACION DE FALLO Y RECUPERACION DE v1.0.0 (ROLLBACK)
+Fecha de la evidencia: 2026-11-17 22:45:32 UTC
+
+1) Despliegue de v1.1.0: verificado en la evidencia 05.
+
+2) Simulacion del problema: se agrega una dependencia inexistente a src/busqueda.py
+$ sed -i '1i import modulo_inexistente' despliegue-v1.1.0-fallido/src/busqueda.py
+import modulo_inexistente
+import unicodedata
+
+3) Se intenta ejecutar la version fallida:
+$ cd despliegue-v1.1.0-fallido && printf '3\nLIB-006\nEl principito\n250\n7\n4\n' | python3 src/busqueda.py
+Traceback (most recent call last):
+  File "/tmp/opencode/despliegue-inventario/despliegue-v1.1.0-fallido/src/busqueda.py", line 1, in <module>
+    import modulo_inexistente
+ModuleNotFoundError: No module named 'modulo_inexistente'
+Codigo de salida: 1 (distinto de 0 = fallo detectado)
+
+4) Recuperacion: se conserva el paquete v1.0.0 y se vuelve a extraer.
+$ unzip -o sistema-inventario-v1.0.0.zip -d version-rollback
+Archive:  sistema-inventario-v1.0.0.zip
+   creating: version-rollback/src/
+  inflating: version-rollback/src/producto.py  
+  inflating: version-rollback/src/busqueda.py  
+
+5) Verificacion de la version recuperada:
+$ cd version-rollback && printf '1\nLIB-002\n3\n' | python3 src/busqueda.py
+
+--- BÚSQUEDA DE LIBROS ---
+1. Buscar por código
+2. Buscar por nombre
+3. Salir
+Elige una opción: Código (ej. LIB-002): =============================================
+Código:      LIB-002
+Nombre:      Pedro Páramo
+Precio:      $199.50 MXN
+Existencia:  8 unidades
+=============================================
+
+--- BÚSQUEDA DE LIBROS ---
+1. Buscar por código
+2. Buscar por nombre
+3. Salir
+Elige una opción: ¡Hasta luego!
+
+RESULTADO: ROLLBACK OK - v1.0.0 restaurada y funcionando.
